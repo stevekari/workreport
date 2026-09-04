@@ -6,12 +6,14 @@ import ProfileModal from "./components/ProfileModal";
 import Sidebar from "./components/Sidebar";
 import { api, loadSession, clearSession } from "./api/api";
 import {
+  LANGUAGES,
   getStoredLanguage,
   setStoredLanguage,
   getStoredTheme,
   setStoredTheme,
   createTranslator,
 } from "./i18n/i18n";
+import kariLogo from "./assets/kari.png";
 
 export default function App() {
   const [user, setUser] = useState(loadSession());
@@ -154,26 +156,89 @@ export default function App() {
 
       {/* Middle / Main Content Canvas */}
       <div className="app-main-wrapper">
-        <header className="mobile-topbar">
-          <button
-            type="button"
-            className="mobile-menu-btn icon-btn"
-            onClick={() => setMobileSidebarOpen(true)}
-            aria-label="Open navigation menu"
-          >
-            ☰
-          </button>
-          <div className="mobile-brand-title">
-            {user.role === "ADMIN" ? user.companyName : user.fullName || user.username}
+        <header className="app-top-navbar">
+          <div className="top-navbar-left">
+            <button
+              type="button"
+              className="mobile-menu-btn icon-btn"
+              onClick={() => setMobileSidebarOpen(true)}
+              aria-label="Open navigation menu"
+            >
+              ☰
+            </button>
+            <div className="top-navbar-brand">
+              <img src={kariLogo} alt="SteveFlow" className="top-navbar-logo" />
+              <div className="top-navbar-titles">
+                <span className="top-navbar-appname">{t("appTitle")}</span>
+                <span className="top-navbar-sub">
+                  {user.role === "ADMIN" ? (
+                    <span className="top-navbar-company-badge">🏢 {user.companyName || "Company"}</span>
+                  ) : (
+                    <span className="top-navbar-worker-badge">👷 {user.fullName || user.username} ({user.displayId || "Employee"})</span>
+                  )}
+                </span>
+              </div>
+            </div>
           </div>
-          <button
-            type="button"
-            className="icon-btn"
-            onClick={() => setIsProfileOpen(true)}
-            title={t("profileSettings")}
-          >
-            👤
-          </button>
+
+          <div className="top-navbar-right">
+            {/* Global Language Selector */}
+            <select
+              className="lang-select top-navbar-lang-select"
+              value={lang}
+              onChange={(e) => handleLangChange(e.target.value)}
+              aria-label={t("language")}
+              title={t("language")}
+            >
+              {LANGUAGES.map((l) => (
+                <option key={l.code} value={l.code}>
+                  {l.flag} {l.label}
+                </option>
+              ))}
+            </select>
+
+            {/* Theme Toggle */}
+            <button
+              type="button"
+              className="icon-btn top-navbar-theme-btn"
+              onClick={() => handleThemeChange(theme === "dark" ? "light" : "dark")}
+              title={t("themeToggle")}
+              aria-label={t("themeToggle")}
+            >
+              {theme === "dark" ? "☀️" : "🌙"}
+            </button>
+
+            {/* Profile & Settings button */}
+            <button
+              type="button"
+              className="top-navbar-profile-btn"
+              onClick={() => setIsProfileOpen(true)}
+              title={t("profileSettings")}
+            >
+              {user.profilePicture?.startsWith("emoji:") ? (
+                <span style={{ fontSize: 16 }}>{user.profilePicture.replace("emoji:", "")}</span>
+              ) : user.profilePicture ? (
+                <img src={user.profilePicture} alt="" className="avatar" style={{ width: 24, height: 24 }} />
+              ) : (
+                <span className="avatar" style={{ width: 24, height: 24, fontSize: 11 }}>
+                  {user.fullName?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "👤"}
+                </span>
+              )}
+              <span className="top-navbar-username-label">{user.fullName || user.username}</span>
+            </button>
+
+            {/* Permanent, Prominent Logout Button (NEVER HIDDEN) */}
+            <button
+              type="button"
+              className="btn btn-outline top-navbar-logout-btn"
+              onClick={handleLogout}
+              title={t("signOut")}
+              aria-label={t("signOut")}
+            >
+              <span className="logout-icon">⏻</span>
+              <span className="logout-text">{t("signOut")}</span>
+            </button>
+          </div>
         </header>
 
         <main className="app-middle-canvas">
@@ -196,6 +261,7 @@ export default function App() {
               t={t}
               selectedProduct={selectedProduct}
               onProductAdded={loadProducts}
+              onLogout={handleLogout}
             />
           )}
         </main>
@@ -207,6 +273,7 @@ export default function App() {
           user={user}
           onClose={() => setIsProfileOpen(false)}
           onUserUpdated={setUser}
+          onLogout={handleLogout}
           theme={theme}
           onThemeChange={handleThemeChange}
           lang={lang}

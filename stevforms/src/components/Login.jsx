@@ -21,8 +21,9 @@ export default function Login({
   const [usernameOrId, setUsernameOrId] = useState("");
   const [password, setPassword] = useState("");
 
-  // Company Admin Registration inputs
+  // Company Admin Registration inputs (Only Company creates email on initial registration)
   const [companyName, setCompanyName] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
   const [adminUsername, setAdminUsername] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
 
@@ -68,12 +69,12 @@ export default function Login({
     }
   }
 
-  // Handle Company Registration (Admin)
+  // Handle Company Registration (Admin - creates email for company)
   async function handleRegisterCompany(e) {
     e.preventDefault();
     setError("");
 
-    if (!companyName.trim() || !adminUsername.trim() || !adminPassword.trim()) {
+    if (!companyName.trim() || !adminUsername.trim() || !adminPassword.trim() || !adminEmail.trim()) {
       setError(t("allCompanyFieldsError"));
       return;
     }
@@ -82,6 +83,7 @@ export default function Login({
     try {
       const auth = await api.registerCompany({
         companyName: companyName.trim(),
+        email: adminEmail.trim(),
         adminUsername: adminUsername.trim(),
         adminPassword: adminPassword.trim(),
       });
@@ -94,7 +96,7 @@ export default function Login({
     }
   }
 
-  // Handle Employee Registration (Must provide verified Company ID!)
+  // Handle Employee Registration (Must provide verified Company ID - no email required)
   async function handleRegisterEmployee(e) {
     e.preventDefault();
     setError("");
@@ -128,78 +130,64 @@ export default function Login({
       saveSession(auth);
       onLoggedIn(auth);
     } catch (err) {
-      setError(err.message || t("registerFailed"));
+      setError(err.message || "Registration failed. Please check company ID and try again.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="login-wrap">
-      {/* Top right floating toolbar for theme and language */}
-      {onLangChange && onThemeChange && (
-        <div className="login-top-controls">
-          <select
-            className="lang-select"
-            value={lang}
-            onChange={(e) => onLangChange(e.target.value)}
-            aria-label={t("language")}
-          >
-            {LANGUAGES.map((l) => (
-              <option key={l.code} value={l.code}>
-                {l.flag} {l.label}
-              </option>
-            ))}
-          </select>
+    <div className="login-fullscreen-wrap">
+      {/* Top right language & theme controls */}
+      <div className="login-top-controls">
+        <select
+          className="lang-select"
+          value={lang}
+          onChange={(e) => onLangChange(e.target.value)}
+          aria-label={t("language")}
+        >
+          {LANGUAGES.map((l) => (
+            <option key={l.code} value={l.code}>
+              {l.flag} {l.label}
+            </option>
+          ))}
+        </select>
 
-          <button
-            type="button"
-            className="icon-btn"
-            onClick={() => onThemeChange(theme === "dark" ? "light" : "dark")}
-            title={t("themeToggle")}
-          >
-            {theme === "dark" ? "☀️" : "🌙"}
-          </button>
-        </div>
-      )}
-
-      <div className="login-brand">
-        <div className="brand-logo">
-          <img
-            className="logo-st"
-            src={kariLogo}
-            alt="SteveFlow"
-            style={{ width: 48, height: 48, borderRadius: 10 }}
-          />
-        </div>
-        <div>
-          <div className="brand-title">{t("appTitle")}</div>
-          <div className="brand-subtitle">
-            {portal === "employee" ? `👷 ${t("employeePortal")}` : `🏢 ${t("companyManagement")}`}
-          </div>
-        </div>
+        <button
+          type="button"
+          className="icon-btn"
+          onClick={() => onThemeChange(theme === "dark" ? "light" : "dark")}
+          title={t("themeToggle")}
+        >
+          {theme === "dark" ? "☀️" : "🌙"}
+        </button>
       </div>
 
-      <div className="card login-card">
-        {/* Portal Switcher: Employee vs Company Admin */}
-        <div className="login-portal-nav">
+      <div className="login-card card">
+        {/* Brand Header */}
+        <div className="login-brand-header">
+          <img src={kariLogo} alt="SteveFlow" className="login-brand-logo" />
+          <h1 className="login-brand-title">{t("appTitle")}</h1>
+          <p className="login-brand-subtitle">{t("appSubtitle")}</p>
+        </div>
+
+        {/* Portal Switcher (Employee vs Company Admin) */}
+        <div className="login-portal-switcher">
           <button
             type="button"
-            className={`login-portal-btn ${portal === "employee" ? "active" : ""}`}
+            className={`btn ${portal === "employee" ? "btn-primary" : "btn-portal-inactive"}`}
             onClick={() => {
               setPortal("employee");
-              setMode("signin");
               setError("");
             }}
           >
-            👷 {t("employee")}
+            👷 {t("employeePortal")}
           </button>
           <button
             type="button"
-            className={`login-portal-btn ${portal === "admin" ? "active" : ""}`}
+            className={`btn ${portal === "admin" ? "btn-primary" : "btn-portal-inactive"}`}
             onClick={() => {
               setPortal("admin");
-              setMode("signin");
               setError("");
             }}
           >
@@ -207,8 +195,8 @@ export default function Login({
           </button>
         </div>
 
-        {/* Sub-modes: Sign In vs Register */}
-        <div className="btn-row" style={{ marginTop: 12, marginBottom: 16 }}>
+        {/* Mode Switcher (Sign In vs Register) */}
+        <div className="login-mode-switcher">
           <button
             type="button"
             className={`btn ${mode === "signin" ? "btn-active" : ""}`}
@@ -251,6 +239,7 @@ export default function Login({
             )}
           </div>
         )}
+
         {/* 1. EMPLOYEE PORTAL */}
         {portal === "employee" && mode === "signin" && (
           <form onSubmit={handleSignIn}>
@@ -294,13 +283,12 @@ export default function Login({
                 required
                 autoFocus
               />
-              <small style={{ color: "var(--accent)", fontSize: 11, marginTop: 4, display: "block", fontWeight: 600 }}>
+              <small style={{ color: "var(--accent)", fontSize: 11, marginTop: 4, display: "block" }}>
                 {t("companyIdSecurityNote")}
               </small>
             </div>
-
             <div className="field">
-              <label>👤 {t("fullNameRequired")}</label>
+              <label>{t("fullNameRequired")}</label>
               <input
                 placeholder="e.g. John Doe"
                 value={empFullName}
@@ -308,33 +296,17 @@ export default function Login({
                 required
               />
             </div>
-
             <div className="field">
-              <label>🏢 {t("departmentRequired")}</label>
-              <select
-                value={empDepartment}
-                onChange={(e) => setEmpDepartment(e.target.value)}
-              >
-                {DEPARTMENTS.map((d) => (
-                  <option key={d} value={d}>
-                    {getDeptLabel(d)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="field">
-              <label>🏷️ {t("usernameRequired")}</label>
+              <label>{t("usernameRequired")}</label>
               <input
-                placeholder="e.g. johndoe"
+                placeholder="e.g. jdoe"
                 value={empUsername}
                 onChange={(e) => setEmpUsername(e.target.value)}
                 required
               />
             </div>
-
             <div className="field">
-              <label>🔑 {t("password")} *</label>
+              <label>{t("password")}</label>
               <input
                 type="password"
                 placeholder={t("createPasswordPlaceholder")}
@@ -343,18 +315,31 @@ export default function Login({
                 required
               />
             </div>
-
+            <div className="field">
+              <label>{t("departmentRequired")}</label>
+              <select
+                value={empDepartment}
+                onChange={(e) => setEmpDepartment(e.target.value)}
+                aria-label={t("departmentRequired")}
+              >
+                {DEPARTMENTS.map((d) => (
+                  <option key={d} value={d}>
+                    {getDeptLabel(d)}
+                  </option>
+                ))}
+              </select>
+            </div>
             <button className="btn btn-block btn-primary" disabled={loading}>
               {loading ? t("registering") : t("joinCompany")}
             </button>
           </form>
         )}
 
-        {/* 2. ADMIN PORTAL */}
+        {/* 2. COMPANY ADMIN PORTAL */}
         {portal === "admin" && mode === "signin" && (
           <form onSubmit={handleSignIn}>
             <div className="field">
-              <label>👑 {t("adminUsernameOrId")}</label>
+              <label>🏢 {t("adminUsernameOrId")}</label>
               <input
                 placeholder={t("adminUsernameOrIdPlaceholder")}
                 value={usernameOrId}
@@ -389,6 +374,16 @@ export default function Login({
                 onChange={(e) => setCompanyName(e.target.value)}
                 required
                 autoFocus
+              />
+            </div>
+            <div className="field">
+              <label>✉️ {t("companyEmail") || "Company / Admin Email *"}</label>
+              <input
+                type="email"
+                placeholder={t("companyEmailPlaceholder") || "e.g. contact@company.com"}
+                value={adminEmail}
+                onChange={(e) => setAdminEmail(e.target.value)}
+                required
               />
             </div>
             <div className="field">

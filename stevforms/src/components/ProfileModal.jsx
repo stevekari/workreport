@@ -24,6 +24,7 @@ export default function ProfileModal({
   onThemeChange,
   lang,
   onLangChange,
+  onLogout,
   t,
 }) {
   const [fullName, setFullName] = useState(user.fullName || "");
@@ -314,18 +315,33 @@ export default function ProfileModal({
             </div>
           </div>
 
-          <div className="btn-row" style={{ marginTop: 20, marginBottom: 0 }}>
-            <button
-              type="button"
-              className="btn"
-              onClick={onClose}
-              disabled={loading}
-            >
-              {t ? t("cancel") : "Cancel"}
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? (t ? t("saving") : "Saving…") : `✔ ${t ? t("saveChanges") : "Save changes"}`}
-            </button>
+          <div className="btn-row" style={{ marginTop: 20, marginBottom: 0, justifyContent: "space-between" }}>
+            {onLogout && (
+              <button
+                type="button"
+                className="btn btn-outline"
+                style={{ color: "var(--danger)", borderColor: "var(--danger)" }}
+                onClick={() => {
+                  onClose();
+                  onLogout();
+                }}
+              >
+                ⏻ {t ? t("signOut") : "Sign out"}
+              </button>
+            )}
+            <div style={{ display: "flex", gap: 8, marginLeft: "auto" }}>
+              <button
+                type="button"
+                className="btn"
+                onClick={onClose}
+                disabled={loading}
+              >
+                {t ? t("cancel") : "Cancel"}
+              </button>
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? (t ? t("saving") : "Saving…") : `✔ ${t ? t("saveChanges") : "Save changes"}`}
+              </button>
+            </div>
           </div>
         </form>
       </div>

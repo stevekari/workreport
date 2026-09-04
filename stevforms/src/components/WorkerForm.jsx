@@ -7,6 +7,7 @@ export default function WorkerForm({
   t,
   selectedProduct,
   onProductAdded,
+  onLogout,
 }) {
   const assignedDept = user?.department || "Color";
   const [activeTab, setActiveTab] = useState("form"); // 'form' | 'notices'
@@ -168,6 +169,14 @@ export default function WorkerForm({
     return dept;
   }
 
+  function getStatusLabel(status) {
+    if (!t) return status;
+    if (status === "OK") return t("statusOk");
+    if (status === "Pending") return t("statusPending");
+    if (status === "Issue") return t("statusIssue");
+    return status;
+  }
+
   const deptIcons = {
     Color: "🎨",
     Drying: "🌀",
@@ -249,8 +258,8 @@ export default function WorkerForm({
           </div>
         </div>
 
-        {/* Quick Send Note to Admin Button */}
-        <div className="worker-banner-action">
+        {/* Quick Send Note to Admin & Logout Buttons */}
+        <div className="worker-banner-action" style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <button
             type="button"
             className="btn btn-primary"
@@ -261,6 +270,18 @@ export default function WorkerForm({
           >
             💬 {t ? t("sendMessageToAdmin") : "Send Note to Admin"}
           </button>
+
+          {onLogout && (
+            <button
+              type="button"
+              className="btn btn-outline"
+              style={{ color: "var(--danger)", borderColor: "var(--danger)" }}
+              onClick={onLogout}
+              title={t ? t("signOut") : "Sign out"}
+            >
+              ⏻ {t ? t("signOut") : "Sign out"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -629,7 +650,7 @@ export default function WorkerForm({
                     <td>{formatDate(s.date)}</td>
                     <td>
                       <span className={`badge ${badgeClass(s.status)}`}>
-                        {s.status}
+                        {getStatusLabel(s.status)}
                       </span>
                     </td>
                   </tr>

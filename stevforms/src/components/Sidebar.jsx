@@ -86,7 +86,7 @@ export default function Sidebar({
               {user.role === "ADMIN" ? user.companyName : user.fullName || user.username}
             </div>
             <div className="sidebar-brand-badge">
-              {user.role === "ADMIN" ? "👑 Admin" : `👷 ${getDeptLabel(user.department || "Color")}`}
+              {user.role === "ADMIN" ? `👑 ${t("companyAdmin") || "Admin"}` : `👷 ${getDeptLabel(user.department || "Color")}`}
             </div>
           </div>
         </div>
@@ -203,10 +203,10 @@ export default function Sidebar({
                 </span>
                 <div className="sidebar-worker-details">
                   <div className="sidebar-worker-name-row">
-                    <span className="sidebar-worker-name">All Employees</span>
+                    <span className="sidebar-worker-name">{t("allMembers") || "All Employees"}</span>
                   </div>
                   <div className="sidebar-worker-sub">
-                    <span className="sidebar-worker-id">All IDs</span>
+                    <span className="sidebar-worker-id">{t("workers") || "Workers"}</span>
                   </div>
                 </div>
               </button>

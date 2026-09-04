@@ -512,18 +512,170 @@ body {
   box-sizing: border-box;
 }
 
-.mobile-topbar {
-  display: none;
+/* ---- PERMANENT TOP NAVBAR (ALWAYS VISIBLE ACROSS DESKTOP & MOBILE) ---- */
+.app-top-navbar {
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
+  padding: 10px 24px;
+  background: var(--card);
   border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  min-height: 58px;
+  box-sizing: border-box;
+  gap: 12px;
+}
+
+.top-navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.top-navbar-left .mobile-menu-btn {
+  display: none;
+}
+
+.top-navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.top-navbar-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.top-navbar-titles {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.top-navbar-appname {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+
+.top-navbar-sub {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  min-width: 0;
+}
+
+.top-navbar-company-badge,
+.top-navbar-worker-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.top-navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.top-navbar-lang-select {
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.top-navbar-theme-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.top-navbar-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.top-navbar-profile-btn:hover {
+  border-color: var(--accent);
   background: var(--card);
 }
 
-.mobile-brand-title {
-  font-size: 16px;
-  font-weight: 800;
+.top-navbar-username-label {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-navbar-logout-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 6px 14px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+  border: 1.5px solid rgba(239, 68, 68, 0.45) !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+}
+
+.top-navbar-logout-btn:hover {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35) !important;
+}
+
+.logout-icon {
+  font-size: 14px;
+  font-weight: 900;
 }
 
 /* ---- BIG EMPLOYEE NAME HEADER BANNER ---- */
@@ -1484,8 +1636,16 @@ button {
 }
 
 @media (max-width: 768px) {
-  .mobile-topbar {
+  .top-navbar-left .mobile-menu-btn {
     display: flex;
+  }
+
+  .top-navbar-sub {
+    display: none;
+  }
+
+  .top-navbar-username-label {
+    display: none;
   }
 
   .app-sidebar {
@@ -2178,7 +2338,7 @@ html, body {
   touch-action: manipulation;
 }
 
-.mobile-topbar {
+.app-top-navbar {
   padding-top: max(10px, var(--sat));
 }
 
@@ -2205,14 +2365,13 @@ html, body {
     touch-action: manipulation;
   }
 
-  .mobile-topbar {
-    min-height: 56px;
-    padding: 8px 14px;
+  .app-top-navbar {
+    min-height: 54px;
+    padding: 8px 12px;
   }
 
-  .mobile-brand-title {
-    font-size: 16px;
-    font-weight: 700;
+  .top-navbar-logout-btn {
+    padding: 6px 10px !important;
   }
 
   .app-middle-canvas {
@@ -2245,6 +2404,16 @@ html, body {
 
 /* Extra small mobile phones (e.g. iPhone SE, 320px - 480px) */
 @media (max-width: 480px) {
+  .top-navbar-logout-btn .logout-text {
+    display: none;
+  }
+
+  .top-navbar-lang-select {
+    padding: 4px 6px;
+    font-size: 12px;
+    max-width: 86px;
+  }
+
   .worker-big-name-banner {
     flex-direction: column;
     align-items: flex-start;

@@ -41,7 +41,7 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
-    // POST /api/auth/register-company - Create new company and admin account (Unique 4-digit code generated)
+    // POST /api/auth/register-company - Create new company and admin account (Only company creates email on registration)
     @PostMapping("/register-company")
     public ResponseEntity<?> registerCompany(@RequestBody RegisterCompanyRequest req) {
         if (req == null) {
@@ -51,6 +51,7 @@ public class AuthController {
         if (compName == null || compName.isEmpty()) {
             return ResponseEntity.badRequest().body("Company name is required");
         }
+        String email = req.getEffectiveEmail();
         String adminUser = req.getEffectiveAdminUsername();
         if (adminUser == null || adminUser.isEmpty()) {
             return ResponseEntity.badRequest().body("Admin username is required");
@@ -62,16 +63,17 @@ public class AuthController {
 
         // Strict duplicate protection: Company cannot be registered twice with the same name
         if (companyRepo.existsByNameIgnoreCase(compName)) {
-            return ResponseEntity.badRequest().body("A company named '" + compName + "' is already registered in the system. Please sign in or use a different company name.");
+            return ResponseEntity.badRequest().body("The company name '" + compName + "' is already in use. A company with this name has already been registered in the app. Please choose a different company name or sign in.");
         }
 
         // Generate a random 4-digit unique company ID (e.g. COMP-4829)
         String unique4DigitCode = generateUnique4DigitCompanyCode();
-        Company company = companyRepo.save(new Company(compName, unique4DigitCode));
+        Company company = companyRepo.save(new Company(compName, unique4DigitCode, email));
 
         User admin = new User(
                 "Admin",
                 adminUser,
+                email,
                 passwordEncoder.encode(adminPass),
                 Role.ADMIN,
                 company
@@ -94,6 +96,7 @@ public class AuthController {
                         admin.getId(),
                         admin.getFullName(),
                         admin.getUsername(),
+                        admin.getEmail(),
                         admin.getRole().name(),
                         company.getName(),
                         company.getCompanyCode(),
@@ -103,7 +106,7 @@ public class AuthController {
                 ));
     }
 
-    // POST /api/auth/register-employee - Employee registers under verified origin company with Company ID
+    // POST /api/auth/register-employee - Employee registers under verified origin company with Company ID (No email required)
     @PostMapping("/register-employee")
     public ResponseEntity<?> registerEmployee(@RequestBody RegisterEmployeeRequest req) {
         if (req == null) {
@@ -163,6 +166,7 @@ public class AuthController {
                         employee.getId(),
                         employee.getFullName(),
                         employee.getUsername(),
+                        employee.getEmail(),
                         employee.getRole().name(),
                         company.getName(),
                         company.getCompanyCode(),
@@ -172,21 +176,22 @@ public class AuthController {
                 ));
     }
 
-    // POST /api/auth/login - Login by username, display ID, or full name + password
+    // POST /api/auth/login - Flexible login by Email, Display ID ("ID-1001"), or Name/Username + password
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req) {
-        if (req == null || req.usernameOrId() == null || req.usernameOrId().trim().isEmpty()
-                || req.password() == null || req.password().isEmpty()) {
-            return ResponseEntity.badRequest().body("Please enter your name/ID and password to log in");
+        if (req == null || req.usernameOrId() == null || req.usernameOrId().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Please enter your name, email, or ID.");
+        }
+        if (req.password() == null || req.password().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Password is required.");
         }
 
         String inputIdentifier = req.usernameOrId().trim();
-        String inputPassword = req.password();
+        String rawPassword = req.password();
 
-        User user = findUserForAuthentication(inputIdentifier, inputPassword);
-
+        User user = findUserForAuthentication(inputIdentifier, rawPassword);
         if (user == null) {
-            return ResponseEntity.status(401).body("Invalid Employee Name/ID or password. You are not allowed to log in without a valid account.");
+            return ResponseEntity.status(401).body("Invalid credentials. Please check your username, email, ID, and password.");
         }
 
         String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole().name());
@@ -205,6 +210,7 @@ public class AuthController {
                         user.getId(),
                         user.getFullName(),
                         user.getUsername(),
+                        user.getEmail(),
                         user.getRole().name(),
                         user.getCompany().getName(),
                         user.getCompany().getCompanyCode(),
@@ -243,6 +249,7 @@ public class AuthController {
                 user.getId(),
                 user.getFullName(),
                 user.getUsername(),
+                user.getEmail(),
                 user.getRole().name(),
                 user.getCompany().getName(),
                 user.getCompany().getCompanyCode(),
@@ -264,6 +271,7 @@ public class AuthController {
                 user.getId(),
                 user.getFullName(),
                 user.getUsername(),
+                user.getEmail(),
                 user.getRole().name(),
                 user.getCompany().getName(),
                 user.getCompany().getCompanyCode(),
@@ -280,23 +288,21 @@ public class AuthController {
                 .secure(false)
                 .sameSite("Strict")
                 .path("/")
-                .maxAge(0) // delete cookie
+                .maxAge(0)
                 .build();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body("Logged out");
+                .body("Logged out successfully");
     }
 
     private String generateUnique4DigitCompanyCode() {
-        int attempts = 0;
-        while (attempts < 200) {
-            int random4 = ThreadLocalRandom.current().nextInt(1000, 10000);
-            String code = "COMP-" + random4;
+        for (int i = 0; i < 50; i++) {
+            int randomNum = ThreadLocalRandom.current().nextInt(1000, 10000);
+            String code = "COMP-" + randomNum;
             if (!companyRepo.existsByCompanyCodeIgnoreCase(code)) {
                 return code;
             }
-            attempts++;
         }
         return "COMP-" + ThreadLocalRandom.current().nextInt(1000, 10000);
     }
@@ -349,7 +355,15 @@ public class AuthController {
             } catch (NumberFormatException ignored) {}
         }
 
-        // 2. Try username matches across companies (authenticates the one with matching password)
+        // 2. Try email matches (company admin email)
+        List<User> byEmail = userRepo.findAllByEmailIgnoreCase(trimmed);
+        for (User candidate : byEmail) {
+            if (checkPasswordMatch(password, candidate.getPassword())) {
+                return candidate;
+            }
+        }
+
+        // 3. Try username matches across companies (authenticates the one with matching password)
         List<User> byUsername = userRepo.findAllByUsernameIgnoreCase(trimmed);
         for (User candidate : byUsername) {
             if (checkPasswordMatch(password, candidate.getPassword())) {
@@ -357,7 +371,7 @@ public class AuthController {
             }
         }
 
-        // 3. Try full name matches across companies (authenticates the one with matching password)
+        // 4. Try full name matches across companies (authenticates the one with matching password)
         List<User> byFullName = userRepo.findByFullNameIgnoreCase(trimmed);
         for (User candidate : byFullName) {
             if (checkPasswordMatch(password, candidate.getPassword())) {
@@ -382,11 +396,15 @@ public class AuthController {
             if (by4DigitCode.isPresent()) return by4DigitCode.get();
         }
 
-        // 3. Try company name (case-insensitive)
+        // 3. Try company email
+        Optional<Company> byEmail = companyRepo.findByEmailIgnoreCase(trimmed);
+        if (byEmail.isPresent()) return byEmail.get();
+
+        // 4. Try company name (case-insensitive)
         Optional<Company> byName = companyRepo.findByNameIgnoreCase(trimmed);
         if (byName.isPresent()) return byName.get();
 
-        // 4. Try COMP- prefix numeric ID
+        // 5. Try COMP- prefix numeric ID
         if (trimmed.toUpperCase().startsWith("COMP-")) {
             try {
                 Long id = Long.parseLong(trimmed.substring(5).trim());
@@ -395,7 +413,7 @@ public class AuthController {
             } catch (NumberFormatException ignored) {}
         }
 
-        // 5. Try raw numeric database ID
+        // 6. Try raw numeric database ID
         if (trimmed.matches("^\\d+$")) {
             try {
                 Long id = Long.parseLong(trimmed);

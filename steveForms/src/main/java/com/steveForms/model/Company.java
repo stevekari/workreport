@@ -17,6 +17,8 @@ public class Company {
     @Column(unique = true, nullable = false)
     private String companyCode; // e.g. COMP-4829 (Random 4-digit number)
 
+    private String email; // Company / Admin contact email (registered on first company creation)
+
     public Company() {
     }
 
@@ -28,6 +30,12 @@ public class Company {
     public Company(String name, String companyCode) {
         this.name = name;
         this.companyCode = companyCode;
+    }
+
+    public Company(String name, String companyCode, String email) {
+        this.name = name;
+        this.companyCode = companyCode;
+        this.email = email;
     }
 
     @PrePersist
@@ -62,5 +70,13 @@ public class Company {
 
     public void setCompanyCode(String companyCode) {
         this.companyCode = companyCode;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

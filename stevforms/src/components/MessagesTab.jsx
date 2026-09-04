@@ -174,13 +174,13 @@ export default function MessagesTab({ t }) {
           <div className="msg-summary-num" style={{ color: "var(--accent)" }}>
             {meetingCount}
           </div>
-          <div className="msg-summary-label">📅 Meetings</div>
+          <div className="msg-summary-label">📅 {t ? t("meetingTag") : "Meetings"}</div>
         </div>
         <div className="msg-summary-card" style={{ borderColor: shortageCount > 0 ? "var(--danger)" : "var(--border)" }}>
           <div className="msg-summary-num" style={{ color: shortageCount > 0 ? "var(--danger)" : "var(--text)" }}>
             {shortageCount}
           </div>
-          <div className="msg-summary-label">🚨 Shortages</div>
+          <div className="msg-summary-label">🚨 {t ? t("shortageTag") : "Shortages"}</div>
         </div>
       </div>
 
@@ -191,7 +191,7 @@ export default function MessagesTab({ t }) {
           className={`btn btn-sm ${filterType === "ALL" ? "btn-active" : ""}`}
           onClick={() => setFilterType("ALL")}
         >
-          All ({messages.length})
+          {t ? t("allEntries") : "All"} ({messages.length})
         </button>
         <button
           type="button"
