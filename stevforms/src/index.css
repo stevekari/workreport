@@ -1370,46 +1370,109 @@ button {
 }
 
 /* ---- Login Screen & Dedicated Portals ---- */
+.login-fullscreen-wrap,
 .login-wrap {
   min-height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 40px 20px;
   position: relative;
+  box-sizing: border-box;
+  background: radial-gradient(circle at 50% 30%, var(--card-2) 0%, var(--bg) 100%);
 }
 
 .login-top-controls {
   position: absolute;
-  top: 24px;
+  top: 20px;
   right: 24px;
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.login-brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 24px;
-}
-
-.logo-st {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  object-fit: cover;
-  box-shadow: var(--shadow-sm);
+  z-index: 10;
 }
 
 .login-card {
   width: 100%;
-  max-width: 420px;
-  border-radius: 18px;
-  padding: 28px;
-  box-shadow: var(--shadow-lg);
+  max-width: 440px;
+  margin: auto;
+  border-radius: 20px;
+  padding: 32px 28px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28), 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.login-brand-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.login-brand-logo {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  margin-bottom: 12px;
+  border-radius: 12px;
+}
+
+.login-brand-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+
+.login-brand-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+}
+
+.login-portal-switcher {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.login-portal-switcher .btn {
+  flex: 1;
+  padding: 10px 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.btn-portal-inactive {
+  background: var(--card-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.btn-portal-inactive:hover {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--border-hover);
+}
+
+.login-mode-switcher {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.login-mode-switcher .btn {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 /* Portal Tabs: Employee vs Admin */
