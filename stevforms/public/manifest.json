@@ -1,0 +1,24 @@
+{
+  "short_name": "SteveFlow",
+  "name": "SteveFlow - Factory & Team Management",
+  "description": "Production tracking, group announcements, meeting scheduler, and team communication",
+  "icons": [
+    {
+      "src": "/assets/kari.png",
+      "type": "image/png",
+      "sizes": "192x192 512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "display": "standalone",
+  "orientation": "any",
+  "scope": "/"
+}

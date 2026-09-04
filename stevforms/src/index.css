@@ -2158,3 +2158,157 @@ button {
     justify-content: space-between;
   }
 }
+
+/* ============================================================
+   MULTI-DEVICE & MOBILE FIRST-CLASS RESPONSIVE SYSTEM
+   ============================================================ */
+
+/* Safe area insets for iOS devices with notches and home bar */
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+}
+
+html, body {
+  padding-left: var(--sal);
+  padding-right: var(--sar);
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
+.mobile-topbar {
+  padding-top: max(10px, var(--sat));
+}
+
+/* Touch-friendly inputs: prevent iOS auto-zoom on mobile (< 768px) */
+@media (max-width: 768px) {
+
+  input[type="text"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="email"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  .btn,
+  .icon-btn,
+  .worker-tab-nav-btn,
+  .msg-type-chip,
+  .btn-like,
+  .btn-comment {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  .mobile-topbar {
+    min-height: 56px;
+    padding: 8px 14px;
+  }
+
+  .mobile-brand-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .app-middle-canvas {
+    padding: 14px 12px 60px;
+  }
+
+  /* Responsive Table touch scroll */
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+
+  /* Modal on Mobile Phones */
+  .modal-overlay {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  .modal-card {
+    width: 100%;
+    max-height: 85vh;
+    border-radius: 16px 16px 8px 8px;
+    padding: 20px 16px;
+    overflow-y: auto;
+  }
+}
+
+/* Extra small mobile phones (e.g. iPhone SE, 320px - 480px) */
+@media (max-width: 480px) {
+  .worker-big-name-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .worker-banner-details {
+    width: 100%;
+  }
+
+  .worker-big-name-text {
+    font-size: 20px;
+  }
+
+  .worker-banner-action {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .worker-banner-action .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .login-card {
+    padding: 20px 14px;
+    margin: 8px;
+  }
+
+  .login-portal-switcher {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .login-portal-switcher .btn {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .messages-summary-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .msg-summary-card {
+    padding: 10px 12px;
+  }
+
+  .msg-summary-num {
+    font-size: 20px;
+  }
+}
+
+/* Tablets (iPad, 768px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .app-sidebar {
+    width: 240px;
+  }
+
+  .dept-cards-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .messages-summary-bar {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
