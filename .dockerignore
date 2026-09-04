@@ -1,0 +1,27 @@
+# Version Control
+.git
+.gitignore
+
+# Node & Frontend
+**/node_modules
+**/dist
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Java & Backend
+**/target
+**/*.class
+**/*.jar
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE & OS
+.idea
+.vscode
+*.iml
+.DS_Store
+Thumbs.db
+
+# Logs & Temporary Files
+*.log
+data/

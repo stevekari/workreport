@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: steveflow
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: frankfurt # Or oregon / ohio / singapore
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: JWT_SECRET
+        generateValue: true
+    disk:
+      name: steveflow-data
+      mountPath: /app/data
+      sizeGB: 1
