@@ -138,37 +138,40 @@ export default function Login({
 
   return (
     <div className="login-fullscreen-wrap">
-      {/* Top right language & theme controls */}
-      <div className="login-top-controls">
-        <select
-          className="lang-select"
-          value={lang}
-          onChange={(e) => onLangChange(e.target.value)}
-          aria-label={t("language")}
-        >
-          {LANGUAGES.map((l) => (
-            <option key={l.code} value={l.code}>
-              {l.flag} {l.label}
-            </option>
-          ))}
-        </select>
-
-        <button
-          type="button"
-          className="icon-btn"
-          onClick={() => onThemeChange(theme === "dark" ? "light" : "dark")}
-          title={t("themeToggle")}
-        >
-          {theme === "dark" ? "☀️" : "🌙"}
-        </button>
-      </div>
-
       <div className="login-card card">
         {/* Brand Header */}
         <div className="login-brand-header">
           <img src={kariLogo} alt="SteveFlow" className="login-brand-logo" />
           <h1 className="login-brand-title">{t("appTitle")}</h1>
           <p className="login-brand-subtitle">{t("appSubtitle")}</p>
+        </div>
+
+        {/* Language & Theme Selector directly inside Form / Card */}
+        <div className="login-card-controls">
+          <div className="login-card-lang-wrap">
+            <span className="login-card-lang-icon" aria-hidden="true">🌐</span>
+            <select
+              className="login-card-lang-select"
+              value={lang}
+              onChange={(e) => onLangChange(e.target.value)}
+              aria-label={t("language")}
+            >
+              {LANGUAGES.map((l) => (
+                <option key={l.code} value={l.code}>
+                  {l.flag} {l.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            type="button"
+            className="icon-btn login-card-theme-btn"
+            onClick={() => onThemeChange(theme === "dark" ? "light" : "dark")}
+            title={t("themeToggle")}
+            aria-label={t("themeToggle")}
+          >
+            {theme === "dark" ? "☀️" : "🌙"}
+          </button>
         </div>
 
         {/* Portal Switcher (Employee vs Company Admin) */}

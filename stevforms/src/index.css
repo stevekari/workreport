@@ -1384,16 +1384,6 @@ button {
   background: radial-gradient(circle at 50% 30%, var(--card-2) 0%, var(--bg) 100%);
 }
 
-.login-top-controls {
-  position: absolute;
-  top: 20px;
-  right: 24px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  z-index: 10;
-}
-
 .login-card {
   width: 100%;
   max-width: 440px;
@@ -1411,7 +1401,7 @@ button {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 
 .login-brand-logo {
@@ -1434,6 +1424,69 @@ button {
   font-size: 13px;
   color: var(--text-muted);
   margin: 4px 0 0;
+}
+
+/* In-Card Language & Theme Controls (Integrated at top of Form) */
+.login-card-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 8px 12px;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.login-card-lang-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.login-card-lang-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.login-card-lang-select {
+  flex: 1;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.login-card-lang-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.login-card-theme-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.login-card-theme-btn:hover {
+  background: var(--card-2);
+  transform: scale(1.05);
 }
 
 .login-portal-switcher {
