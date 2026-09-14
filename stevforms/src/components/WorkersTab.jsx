@@ -9,6 +9,8 @@ export default function WorkersTab({ t, onWorkerAdded }) {
   const [password, setPassword] = useState("");
   const [department, setDepartment] = useState("Color");
   const [error, setError] = useState("");
+  const [showAddPassword, setShowAddPassword] = useState(false);
+  const [showEditPassword, setShowEditPassword] = useState(false);
 
   const [editingId, setEditingId] = useState(null);
   const [editDraft, setEditDraft] = useState({
@@ -44,12 +46,17 @@ export default function WorkersTab({ t, onWorkerAdded }) {
   async function addWorker(e) {
     e.preventDefault();
     setError("");
+    if (password && password.trim().length < 6) {
+      setError(t ? t("passwordMinLength") : "Password must be at least 6 characters long.");
+      return;
+    }
     try {
       await api.addWorker({ fullName, username, password, department });
       setFullName("");
       setUsername("");
       setPassword("");
       setDepartment("Color");
+      setShowAddPassword(false);
       load();
     } catch (err) {
       setError(err.message || (t ? t("couldNotAddWorker") : "Could not add worker"));
@@ -64,9 +71,14 @@ export default function WorkersTab({ t, onWorkerAdded }) {
       department: worker.department || "Color",
       password: "",
     });
+    setShowEditPassword(false);
   }
 
   async function saveEdit(id) {
+    if (editDraft.password && editDraft.password.trim().length < 6) {
+      alert(t ? t("passwordMinLength") : "Password must be at least 6 characters long.");
+      return;
+    }
     try {
       await api.updateWorker(id, editDraft);
       setEditingId(null);
@@ -106,13 +118,25 @@ export default function WorkersTab({ t, onWorkerAdded }) {
           onChange={(e) => setUsername(e.target.value)}
           required
         />
-        <input
-          placeholder={t ? t("password") : "Password"}
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="password-input-wrap" style={{ minWidth: 150 }}>
+          <input
+            placeholder={t ? t("password") : "Password"}
+            type={showAddPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+          />
+          <button
+            type="button"
+            className="password-toggle-btn"
+            onClick={() => setShowAddPassword(!showAddPassword)}
+            aria-label={showAddPassword ? (t ? t("hidePassword") : "Hide password") : (t ? t("showPassword") : "Show password")}
+            title={showAddPassword ? (t ? t("hidePassword") : "Hide password") : (t ? t("showPassword") : "Show password")}
+          >
+            {showAddPassword ? "🙈" : "👁️"}
+          </button>
+        </div>
         <select
           value={department}
           onChange={(e) => setDepartment(e.target.value)}
@@ -191,15 +215,26 @@ export default function WorkersTab({ t, onWorkerAdded }) {
                     />
                   </td>
                   <td>
-                    <input
-                      type="password"
-                      placeholder="New pass (opt)"
-                      value={editDraft.password}
-                      onChange={(e) =>
-                        setEditDraft({ ...editDraft, password: e.target.value })
-                      }
-                      style={{ minWidth: 110 }}
-                    />
+                    <div className="password-input-wrap" style={{ minWidth: 120 }}>
+                      <input
+                        type={showEditPassword ? "text" : "password"}
+                        placeholder="New pass (opt)"
+                        value={editDraft.password}
+                        onChange={(e) =>
+                          setEditDraft({ ...editDraft, password: e.target.value })
+                        }
+                        style={{ minWidth: 110 }}
+                      />
+                      <button
+                        type="button"
+                        className="password-toggle-btn"
+                        onClick={() => setShowEditPassword(!showEditPassword)}
+                        aria-label={showEditPassword ? (t ? t("hidePassword") : "Hide password") : (t ? t("showPassword") : "Show password")}
+                        title={showEditPassword ? (t ? t("hidePassword") : "Hide password") : (t ? t("showPassword") : "Show password")}
+                      >
+                        {showEditPassword ? "🙈" : "👁️"}
+                      </button>
+                    </div>
                   </td>
                   <td>
                     <button

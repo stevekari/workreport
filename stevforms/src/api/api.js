@@ -54,6 +54,7 @@ export const api = {
   registerEmployee: (data) =>
     request("/auth/register-employee", { method: "POST", body: data }),
   login: (data) => request("/auth/login", { method: "POST", body: data }),
+  logout: () => request("/auth/logout", { method: "POST" }),
   updateProfile: (data) =>
     request("/auth/profile", { method: "PUT", body: data }),
   getMe: () => request("/auth/me"),

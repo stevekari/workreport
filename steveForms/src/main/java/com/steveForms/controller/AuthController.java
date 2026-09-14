@@ -60,6 +60,9 @@ public class AuthController {
         if (adminPass == null || adminPass.isEmpty()) {
             return ResponseEntity.badRequest().body("Admin password is required");
         }
+        if (adminPass.trim().length() < 6) {
+            return ResponseEntity.badRequest().body("Admin password must be at least 6 characters long");
+        }
 
         // Strict duplicate protection: Company cannot be registered twice with the same name
         if (companyRepo.existsByNameIgnoreCase(compName)) {
@@ -130,6 +133,9 @@ public class AuthController {
         String empUsername = req.username().trim();
         String empFullName = req.fullName().trim();
         String empPassword = req.password().trim();
+        if (empPassword.length() < 6) {
+            return ResponseEntity.badRequest().body("Password must be at least 6 characters long.");
+        }
 
         // 1. Security Check: Company MUST be registered in the system (matches 4-digit code, COMP-xxxx, or name)
         Company company = findCompanyByIdOrCodeOrName(compIdentifier);
@@ -234,6 +240,9 @@ public class AuthController {
             user.setProfilePicture(req.profilePicture());
         }
         if (req.password() != null && !req.password().isBlank()) {
+            if (req.password().trim().length() < 6) {
+                return ResponseEntity.badRequest().body("New password must be at least 6 characters long.");
+            }
             user.setPassword(passwordEncoder.encode(req.password().trim()));
         }
         if (req.department() != null && !req.department().isBlank()) {

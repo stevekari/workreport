@@ -17,6 +17,11 @@ export default function Login({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Password visibility states
+  const [showSignInPass, setShowSignInPass] = useState(false);
+  const [showEmpRegPass, setShowEmpRegPass] = useState(false);
+  const [showAdminRegPass, setShowAdminRegPass] = useState(false);
+
   // Sign In inputs
   const [usernameOrId, setUsernameOrId] = useState("");
   const [password, setPassword] = useState("");
@@ -51,6 +56,10 @@ export default function Login({
       setError(t("enterNameOrIdError"));
       return;
     }
+    if (!password) {
+      setError(t("passwordMissingError"));
+      return;
+    }
 
     setLoading(true);
     try {
@@ -76,6 +85,10 @@ export default function Login({
 
     if (!companyName.trim() || !adminUsername.trim() || !adminPassword.trim() || !adminEmail.trim()) {
       setError(t("allCompanyFieldsError"));
+      return;
+    }
+    if (adminPassword.trim().length < 6) {
+      setError(t("passwordMinLength") || "Password must be at least 6 characters long.");
       return;
     }
 
@@ -115,6 +128,10 @@ export default function Login({
     }
     if (!empPassword.trim()) {
       setError(t("passwordMissingError"));
+      return;
+    }
+    if (empPassword.trim().length < 6) {
+      setError(t("passwordMinLength") || "Password must be at least 6 characters long.");
       return;
     }
 
@@ -261,13 +278,24 @@ export default function Login({
             </div>
             <div className="field">
               <label>{t("password")}</label>
-              <input
-                type="password"
-                placeholder={t("loginPasswordPlaceholder")}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="password-input-wrap">
+                <input
+                  type={showSignInPass ? "text" : "password"}
+                  placeholder={t("loginPasswordPlaceholder")}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowSignInPass(!showSignInPass)}
+                  aria-label={showSignInPass ? (t("hidePassword") || "Hide password") : (t("showPassword") || "Show password")}
+                  title={showSignInPass ? (t("hidePassword") || "Hide password") : (t("showPassword") || "Show password")}
+                >
+                  {showSignInPass ? "🙈" : "👁️"}
+                </button>
+              </div>
             </div>
             <button className="btn btn-block btn-primary" disabled={loading}>
               {loading ? t("signingIn") : t("employeeSignIn")}
@@ -310,13 +338,25 @@ export default function Login({
             </div>
             <div className="field">
               <label>{t("password")}</label>
-              <input
-                type="password"
-                placeholder={t("createPasswordPlaceholder")}
-                value={empPassword}
-                onChange={(e) => setEmpPassword(e.target.value)}
-                required
-              />
+              <div className="password-input-wrap">
+                <input
+                  type={showEmpRegPass ? "text" : "password"}
+                  placeholder={t("createPasswordPlaceholder")}
+                  value={empPassword}
+                  onChange={(e) => setEmpPassword(e.target.value)}
+                  required
+                  minLength={6}
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowEmpRegPass(!showEmpRegPass)}
+                  aria-label={showEmpRegPass ? (t("hidePassword") || "Hide password") : (t("showPassword") || "Show password")}
+                  title={showEmpRegPass ? (t("hidePassword") || "Hide password") : (t("showPassword") || "Show password")}
+                >
+                  {showEmpRegPass ? "🙈" : "👁️"}
+                </button>
+              </div>
             </div>
             <div className="field">
               <label>{t("departmentRequired")}</label>
@@ -353,13 +393,24 @@ export default function Login({
             </div>
             <div className="field">
               <label>{t("password")}</label>
-              <input
-                type="password"
-                placeholder={t("loginPasswordPlaceholder")}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="password-input-wrap">
+                <input
+                  type={showSignInPass ? "text" : "password"}
+                  placeholder={t("loginPasswordPlaceholder")}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowSignInPass(!showSignInPass)}
+                  aria-label={showSignInPass ? (t("hidePassword") || "Hide password") : (t("showPassword") || "Show password")}
+                  title={showSignInPass ? (t("hidePassword") || "Hide password") : (t("showPassword") || "Show password")}
+                >
+                  {showSignInPass ? "🙈" : "👁️"}
+                </button>
+              </div>
             </div>
             <button className="btn btn-block btn-primary" disabled={loading}>
               {loading ? t("signingIn") : t("adminSignIn")}
@@ -400,13 +451,25 @@ export default function Login({
             </div>
             <div className="field">
               <label>{t("adminPassword")}</label>
-              <input
-                type="password"
-                placeholder={t("createPasswordPlaceholder")}
-                value={adminPassword}
-                onChange={(e) => setAdminPassword(e.target.value)}
-                required
-              />
+              <div className="password-input-wrap">
+                <input
+                  type={showAdminRegPass ? "text" : "password"}
+                  placeholder={t("createPasswordPlaceholder")}
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  required
+                  minLength={6}
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowAdminRegPass(!showAdminRegPass)}
+                  aria-label={showAdminRegPass ? (t("hidePassword") || "Hide password") : (t("showPassword") || "Show password")}
+                  title={showAdminRegPass ? (t("hidePassword") || "Hide password") : (t("showPassword") || "Show password")}
+                >
+                  {showAdminRegPass ? "🙈" : "👁️"}
+                </button>
+              </div>
             </div>
             <button className="btn btn-block btn-primary" disabled={loading}>
               {loading ? t("creating") : t("createCompanyBtn")}

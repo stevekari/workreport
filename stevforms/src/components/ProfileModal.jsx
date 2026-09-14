@@ -33,6 +33,7 @@ export default function ProfileModal({
   );
   const [department, setDepartment] = useState(user.department || "Color");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -103,6 +104,12 @@ export default function ProfileModal({
     e.preventDefault();
     setError("");
     setSuccess("");
+
+    if (password.trim() && password.trim().length < 6) {
+      setError(t ? t("passwordMinLength") : "Password must be at least 6 characters long.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -268,12 +275,23 @@ export default function ProfileModal({
 
           <div className="field">
             <label>{t ? t("newPasswordLabel") : "New Password (optional)"}</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={t ? t("leaveBlank") : "Leave blank to keep existing password"}
-            />
+            <div className="password-input-wrap">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t ? t("leaveBlank") : "Leave blank to keep existing password"}
+              />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? (t ? t("hidePassword") : "Hide password") : (t ? t("showPassword") : "Show password")}
+                title={showPassword ? (t ? t("hidePassword") : "Hide password") : (t ? t("showPassword") : "Show password")}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
           </div>
 
           <div className="settings-divider" />

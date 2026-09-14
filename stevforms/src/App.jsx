@@ -94,6 +94,7 @@ export default function App() {
   }
 
   function handleLogout() {
+    api.logout().catch(() => {});
     clearSession();
     setUser(null);
   }

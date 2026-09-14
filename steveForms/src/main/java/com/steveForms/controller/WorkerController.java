@@ -89,9 +89,9 @@ public class WorkerController {
 
         if (rawPassword.isEmpty()) {
             rawPassword = "123456"; // default worker password if left blank
+        } else if (rawPassword.length() < 6) {
+            return ResponseEntity.badRequest().body("Password must be at least 6 characters long");
         }
-
-
 
         User worker = new User(
                 fullName,
@@ -141,6 +141,9 @@ public class WorkerController {
         }
 
         if (req.password() != null && !req.password().isBlank()) {
+            if (req.password().trim().length() < 6) {
+                return ResponseEntity.badRequest().body("Password must be at least 6 characters long");
+            }
             worker.setPassword(passwordEncoder.encode(req.password().trim()));
         }
 

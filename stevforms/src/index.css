@@ -1154,6 +1154,50 @@ select:focus {
   margin-bottom: 7px;
 }
 
+/* Password Input & Show/Hide Toggle */
+.password-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-wrap input {
+  width: 100%;
+  padding-right: 44px !important;
+  box-sizing: border-box;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 8px;
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: var(--text-muted);
+  transition: transform 0.15s ease, background 0.15s ease;
+  user-select: none;
+  z-index: 2;
+}
+
+.password-toggle-btn:hover {
+  background: var(--card-2);
+  transform: translateY(-50%) scale(1.12);
+}
+
+.password-toggle-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
 .worker-form-row {
   display: flex;
   gap: 14px;
